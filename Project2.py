@@ -20,8 +20,26 @@ def get_titles_from_search_results():
 
     [('Book title 1', 'Author 1','Rating 1'), ('Book title 2', 'Author 2', 'Rating 2')...]
     """
+    infile = open('search_results.html', 'r')
+    data = infile.read()
+    infile.close()
+    soup = BeautifulSoup(data, 'html.parser')
+    table = soup.find('table', {'class': 'tableList'})
+    trows = table.find_all('tr')
+    tup_list = []
+    for i in trows:
+        findtitle = i.find_all('a', {'class': 'bookTitle'})
+        title = findtitle[0].text.strip()
+        findauthor = i.find_all('div', {'class': 'authorName__container'})
+        author = findauthor[0].text.strip()
+        findrating = i.find_all('span', {'class': 'minirating'})
+        rating = (findrating[0].text.strip())[:4]
+        tuple = title, author, rating
+        tup_list.append(tuple)
+    return tup_list
 
-    pass
+
+    
 
 
 def get_search_links():
@@ -37,8 +55,16 @@ def get_search_links():
     “https://www.goodreads.com/book/show/kdkd".
 
     """
-
-    pass
+    soup = BeautifulSoup(requests.get("https://www.goodreads.com/search?q=fantasy&qid=NwUsLiA2Nc").text, "html.parser")
+    links = []
+    table = soup.find('table', {'class': 'tableList'})
+    trows = table.find_all('tr')
+    for i in trows[:10]:
+        link = i.find_all('a', {'class': 'bookTitle'})
+        string = 'https://www.goodreads.com' + link[0]['href'].strip()
+        links.append(string)
+    return links
+    
 
 
 def get_book_summary(book_html):
@@ -56,8 +82,18 @@ def get_book_summary(book_html):
 
 
     """
-
-    pass
+    infile = open('book_html', 'r')
+    data = infile.read()
+    infile.close()
+    soup = BeautifulSoup(data, 'html.parser')
+    title = soup.find('h1', {'id': 'bookTitle'}).text.strip()
+    author = soup.find('a', {'class': 'authorName'}).text.strip()
+    num_pages = soup.find('span', {'itemprop': 'numberOfPages'}).text.strip(' pages')
+    rating = soup.find('span', {'itemprop': 'ratingValue'}).text.strip()
+    tuple = title, author, int(num_pages), float(rating)
+    return tuple
+    
+    
 
 
 def summarize_best_books(filepath):
@@ -75,7 +111,22 @@ def summarize_best_books(filepath):
     to your list of tuples.
 
     """
-    pass
+    infile = open('book_html', 'r')
+    data = infile.read()
+    infile.close()
+    soup = BeautifulSoup(data, 'html.parser')
+    table = soup.find('div', {'class': 'categoryContainer'})
+    trows = soup.find_all('div', {'class': 'category clearFix'})
+    best_books = []
+    for i in trows:
+        categories = i.find('h4', {'class': 'categor__Copy'}).text.strip()
+        findtitle = i.find_all('img', {'class': 'category__winnerImage'})
+        title = findtitle[0]['alt'].strip()
+        whole = i.find_all('a')
+        link = whole[0]['href'].strip()
+        tuple = categories, title, link
+        best_books.append(tuple)
+    return best_books
 
 
 def write_csv(data, filename):
@@ -100,7 +151,14 @@ def write_csv(data, filename):
    This function should not return anything.
 
     """
-    pass
+    with open(filename, 'w', newline = '') as fileout:
+        head = ('Book title', 'Author Name', 'Rating')
+        writer = csv.writer(fileout, delimiter = ',')
+        writer.writerow(head)
+        out = sorted(data, ley = lambda t: t[-1], reverse = True)
+        for i in out:
+            writer.writerow(i)
+    
 
 
 def extra_credit(filepath):
@@ -115,7 +173,7 @@ def extra_credit(filepath):
 class TestCases(unittest.TestCase):
 
     # call get_search_links() and save it to a static variable: search_urls
-
+    search_urls = get_search_links()
 
     def test_get_titles_from_search_results(self):
         # call get_titles_from_search_results() and save to a local variable
