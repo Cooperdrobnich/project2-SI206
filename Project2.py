@@ -111,7 +111,7 @@ def summarize_best_books(filepath):
     to your list of tuples.
 
     """
-    infile = open('book_html', 'r')
+    infile = open(filepath, 'r')
     data = infile.read()
     infile.close()
     soup = BeautifulSoup(data, 'html.parser')
@@ -119,7 +119,7 @@ def summarize_best_books(filepath):
     trows = soup.find_all('div', {'class': 'category clearFix'})
     best_books = []
     for i in trows:
-        categories = i.find('h4', {'class': 'categor__Copy'}).text.strip()
+        categories = i.find('h4', {'class': 'category__copy'}).text.strip()
         findtitle = i.find_all('img', {'class': 'category__winnerImage'})
         title = findtitle[0]['alt'].strip()
         whole = i.find_all('a')
@@ -247,20 +247,21 @@ class TestCases(unittest.TestCase):
 
     def test_summarize_best_books(self):
         # call summarize_best_books and save it to a variable
-        bestb= summarize_best_books('best_books_2020.html')
+        bestb = summarize_best_books('best_books_2020.html')
         # check that we have the right number of best books (20)
         self.assertEqual(len(bestb), 20)
             # assert each item in the list of best books is a tuple
         for i in bestb:
             self.assertEqual(type(i), tuple)
             self.assertEqual(len(i), 3)
-        self.assertEqual
+        self.assertEqual(bestb[0], ('Fiction', "The Midnight Library", 'https://www.goodreads.com/choiceawards/best-fiction-books-2020'))
+        self.assertEqual(bestb[-1], ('Picture Books', 'Antiracist Baby', 'https://www.goodreads.com/choiceawards/best-picture-books-2020'))
             # check that each tuple has a length of 3
 
         # check that the first tuple is made up of the following 3 strings:'Fiction', "The Midnight Library", 'https://www.goodreads.com/choiceawards/best-fiction-books-2020'
 
         # check that the last tuple is made up of the following 3 strings: 'Picture Books', 'Antiracist Baby', 'https://www.goodreads.com/choiceawards/best-picture-books-2020'
-        pass
+        
 
     def test_write_csv(self):
         # call get_titles_from_search_results on search_results.html and save the result to a variable
