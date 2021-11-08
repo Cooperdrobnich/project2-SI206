@@ -155,7 +155,7 @@ def write_csv(data, filename):
         head = ('Book title', 'Author Name', 'Rating')
         writer = csv.writer(fileout, delimiter = ',')
         writer.writerow(head)
-        out = sorted(data, ley = lambda t: t[-1], reverse = True)
+        out = sorted(data, key = lambda t: t[-1], reverse = True)
         for i in out:
             writer.writerow(i)
     
@@ -264,10 +264,17 @@ class TestCases(unittest.TestCase):
         
 
     def test_write_csv(self):
+        result = get_titles_from_search_results()
+        write_csv(result, 'test.csv')
+        with open('test.csv', 'r') as object:
+            obj_reader = csv.reader(object)
+            lines = list(map(tuple, obj_reader))
         # call get_titles_from_search_results on search_results.html and save the result to a variable
-
+        self.assertEquals(len(lines), 21)
         # call write csv on the variable you saved and 'test.csv'
-
+        self.assertEqual(lines[0], ("Book title", "Author Name", "Rating"))
+        self.assertEqual(lines[1], ('Harry Potter Boxed Set, Books 1-5 (Harry Potter, #1-5)', 'J.K. Rowling,', '4.78'))
+        self.assertEqual(lines[-1], ('Harry Potter and the Cursed Child: Parts One and Two (Harry Potter, #8)', 'John Tiffany (Adaptation),', '3.62'))
         # read in the csv that you wrote (create a variable csv_lines - a list containing all the lines in the csv you just wrote to above)
 
 
@@ -280,7 +287,7 @@ class TestCases(unittest.TestCase):
 
         # check that the last row is 'Harry Potter and the Cursed Child: Parts One and Two (Harry Potter, #8)', 'John Tiffany (Adaptation),', '3.62'
         # ^^^again in a different answer the result for authoer is J.K Rowling. We should accept both
-        pass
+        
 
 
 if __name__ == '__main__':
