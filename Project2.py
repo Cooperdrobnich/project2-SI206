@@ -1,7 +1,7 @@
 # FALL 2021
 # SI 206
 # Name: Cooper Drobnich
-# Who did you work with: Adam Brenner
+# Who did you work with: Adam Brenner and Nicolo Ruffini
 
 from bs4 import BeautifulSoup
 import requests
@@ -82,7 +82,7 @@ def get_book_summary(book_html):
 
 
     """
-    infile = open('book_html', 'r')
+    infile = open(book_html, 'r')
     data = infile.read()
     infile.close()
     soup = BeautifulSoup(data, 'html.parser')
@@ -177,30 +177,37 @@ class TestCases(unittest.TestCase):
 
     def test_get_titles_from_search_results(self):
         # call get_titles_from_search_results() and save to a local variable
-
+        result = get_titles_from_search_results()
         # check that the number of titles extracted is correct (20 titles)
-
+        self.assertEqual(len(result), 20)
         # check that the variable you saved after calling the function is a list
-
+        self.assertEqual(type(result), list)
         # check that each item in the list is a tuple
-
+        for i in result:
+            self.assertEqual(type(i), tuple)
         # check that the first book and author tuple is correct (open search_results.html and find it)
-
+        self.assertEqual(result[0], ('Harry Potter and the Deathly Hallows (Harry Potter, #7)', 'J.K. Rowling', '4.62'))
+        
         # check that the last title is correct (open search_results.html and find it)
-        pass
+        self.assertEqual(result[-1], ('Harry Potter: The Prequel (Harry Potter, #0.5)', 'J.K. Rowling', '4.18'))
+        
 
     def test_get_search_links(self):
         # check that TestCases.search_urls is a list
-
+        self.assertEqual(type(TestCases.search_urls), list)
         # check that the length of TestCases.search_urls is correct (10 URLs)
 
-
+        self.assertEqual(len(TestCases.search_urls), 10)
         # check that each URL in the TestCases.search_urls is a string
+        for i in TestCases.search_urls:
+            self.assertEqual(type(i), str)
         # check that each URL contains the correct url for Goodreads.com followed by /book/show/
-        pass
+            self.assertEqual(i[:36], 'https://www.goodreads.com/book/show/')
+        
 
     def test_get_book_summary(self):
         # the list of webpages you want to pass in one by one into get_book_summary 
+        lst = []
         html_list = ['book_summary_html_files/Fantasy Lover (Hunter Legends, #1) by Sherrilyn Kenyon.html',
                         'book_summary_html_files/Fantasy in Death (In Death, #30) by J.D. Robb.html',
                         'book_summary_html_files/Fantasy of Frost (The Tainted Accords, #1) by Kelly St. Clare.html',
@@ -208,11 +215,21 @@ class TestCases(unittest.TestCase):
                         'book_summary_html_files/Gods and Mortals_ Fourteen Free Urban Fantasy & Paranormal Novels Featuring Thor, Loki, Greek Gods, Native American Spirits, Vampires, Werewolves, & More by C. Gockel.html',
                         'book_summary_html_files/Epic_ Legends of Fantasy by John Joseph Adams.html',
                         'book_summary_html_files/The Kingdom of Fantasy by Geronimo Stilton.html',
-                        'book_summary_html_files/Kurintor Nyusi_ Diverse Epic Fantasy by Aaron-Michael Hall.html',
+                        'book_summary_html_files/How to Write Science Fiction & Fantasy by Orson Scott Card.html',
                         'book_summary_html_files/Kurintor Nyusi_ Diverse Epic Fantasy by Aaron-Michael Hall.html',
                         'book_summary_html_files/Die, Vol. 1_ Fantasy Heartbreaker by Kieron Gillen.html']
         # check that the number of book summaries is correct (10)
-
+        for i in html_list:
+            summary = get_book_summary(i)
+            lst.append(summary)
+        for i in lst:
+            self.assertEqual(type(i), tuple)
+            self.assertEqual(len(i), 4)
+            self.assertEqual(type(i[0]) and type(i[1]), str)
+            self.assertEqual(type(i[2]), int)
+            self.assertEqual(type(i[3]), float)
+        self.assertEqual(lst[0][2], 337)
+        self.assertEqual(lst[-1][3], 4.02)
             # check that each item in the list is a tuple
 
             # check that each tuple has 4 elements
@@ -226,15 +243,18 @@ class TestCases(unittest.TestCase):
         # check that the first book in the search has 337 pages
 
         # check the last book has 4.02 rating
-        pass
+        
 
     def test_summarize_best_books(self):
         # call summarize_best_books and save it to a variable
-
+        bestb= summarize_best_books('best_books_2020.html')
         # check that we have the right number of best books (20)
-
+        self.assertEqual(len(bestb), 20)
             # assert each item in the list of best books is a tuple
-
+        for i in bestb:
+            self.assertEqual(type(i), tuple)
+            self.assertEqual(len(i), 3)
+        self.assertEqual
             # check that each tuple has a length of 3
 
         # check that the first tuple is made up of the following 3 strings:'Fiction', "The Midnight Library", 'https://www.goodreads.com/choiceawards/best-fiction-books-2020'
