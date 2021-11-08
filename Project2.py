@@ -29,11 +29,14 @@ def get_titles_from_search_results():
     tup_list = []
     for i in trows:
         findtitle = i.find_all('a', {'class': 'bookTitle'})
-        title = findtitle[0].text.strip()
+        title_line = findtitle[0]
+        title = title_line.text.strip()
         findauthor = i.find_all('div', {'class': 'authorName__container'})
-        author = findauthor[0].text.strip()
+        author_line = findauthor[0]
+        author = author_line.text.strip()
         findrating = i.find_all('span', {'class': 'minirating'})
-        rating = (findrating[0].text.strip())[:4]
+        rating_line = findrating[0]
+        rating = (rating_line.text.strip())[:4]
         tuple = title, author, rating
         tup_list.append(tuple)
     return tup_list
@@ -86,7 +89,8 @@ def get_book_summary(book_html):
     data = infile.read()
     infile.close()
     soup = BeautifulSoup(data, 'html.parser')
-    title = soup.find('h1', {'id': 'bookTitle'}).text.strip()
+    title_line = soup.find('h1', {'id': 'bookTitle'})
+    title = title_line.text.strip()
     author = soup.find('a', {'class': 'authorName'}).text.strip()
     num_pages = soup.find('span', {'itemprop': 'numberOfPages'}).text.strip(' pages')
     rating = soup.find('span', {'itemprop': 'ratingValue'}).text.strip()
@@ -219,9 +223,11 @@ class TestCases(unittest.TestCase):
                         'book_summary_html_files/Kurintor Nyusi_ Diverse Epic Fantasy by Aaron-Michael Hall.html',
                         'book_summary_html_files/Die, Vol. 1_ Fantasy Heartbreaker by Kieron Gillen.html']
         # check that the number of book summaries is correct (10)
+        
         for i in html_list:
             summary = get_book_summary(i)
             lst.append(summary)
+        self.assertEqual(len(lst), 10)
         for i in lst:
             self.assertEqual(type(i), tuple)
             self.assertEqual(len(i), 4)
